@@ -1,0 +1,10 @@
+.venv/
+venv/
+__pycache__/
+*.pyc
+
+data/chroma/
+data/*.pdf
+data/*.txt
+
+.env
