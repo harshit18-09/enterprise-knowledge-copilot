@@ -2,9 +2,13 @@ from src.qa_pipeline import QAPipeline
 
 qa = QAPipeline()
 
+# MANUAL TEST HOOK 
+filters = {"section": "Some Random Section"}
+
 while True:
     q = input("Question: ")
-    answer, contexts = qa.answer(q)
+    
+    answer, contexts = qa.answer(q, filters=filters)
 
     print("\nANSWER:")
     print(answer)

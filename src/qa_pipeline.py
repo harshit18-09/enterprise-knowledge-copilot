@@ -1,7 +1,6 @@
 from src.retrieval.retriever import Retriever
 from src.llm.ollama_llm import OllamaLLM
 from src.prompting.grounded_promt import build_grounded_prompt
-from src.grounding.validator import is_grounded
 from src.grounding.semantic_validator import SemanticGroundingValidator
 
 class QAPipeline:
@@ -10,8 +9,11 @@ class QAPipeline:
         self.llm = OllamaLLM()
         self.validator = SemanticGroundingValidator()
 
-    def answer(self, question: str):
-        contexts = self.retriever.retrieve(question)
+    def answer(self, question: str, filters: dict = None):
+        contexts = self.retriever.retrieve(
+            query=question,
+            filters=filters
+        )
 
         prompt = build_grounded_prompt(question, contexts)
         answer = self.llm.generate(prompt)
@@ -23,4 +25,3 @@ class QAPipeline:
             )
 
         return answer, contexts
-
