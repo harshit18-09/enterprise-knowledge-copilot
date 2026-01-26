@@ -1,5 +1,12 @@
 import os
 import re
+from dataclasses import dataclass
+from typing import Dict
+
+@dataclass
+class Chunk:
+    text: str
+    metadata: Dict
 
 CHUNK_SIZE = 1000
 OVERLAP = 200
@@ -29,7 +36,7 @@ def strip_front_matter(text: str) -> str:
     return text
 
 
-def chunk_text(text, chunk_size=CHUNK_SIZE, overlap=OVERLAP):
+def chunk_text(text, doc_id: str, doc_name: str, source: str, section_title: str = "Document", chunk_size=CHUNK_SIZE, overlap=OVERLAP):
     chunks = []
     start = 0
     text_length = len(text)
@@ -39,11 +46,20 @@ def chunk_text(text, chunk_size=CHUNK_SIZE, overlap=OVERLAP):
         chunk = text[start:end].strip()
 
         if chunk:
-            chunks.append({
-                "text": chunk,
-                "start": start,
+            chunk_metadata = {
+                "doc_id": doc_id,
+                "doc_name": doc_name,
+                "section": section_title,
+                "chunk_id": len(chunks),  # This gives us 0, 1, 2, ...
+                "source": source,
+                "start": start,          # Keep existing fields
                 "end": min(end, text_length)
-            })
+            }
+
+            chunks.append(Chunk(
+                text=chunk,
+                metadata=chunk_metadata
+            ))
 
         start = end - overlap
 
@@ -59,15 +75,20 @@ if __name__ == "__main__":
     # 🔑 STRUCTURAL FIX (this is the key)
     text = strip_front_matter(text)
 
-    chunks = chunk_text(text)
+    chunks = chunk_text(text, doc_id="doc1", doc_name="Raw Document", source=input_path)
 
     os.makedirs("data", exist_ok=True)
 
     with open(output_path, "w", encoding="utf-8") as f:
-        for i, c in enumerate(chunks):
+        for chunk_obj in chunks:
+            meta = chunk_obj.metadata
+            # Escape newlines in text to keep one chunk per line
+            escaped_text = chunk_obj.text.replace("\n", "\\n")
             f.write(
-                f"{i}||{c['start']}||{c['end']}||{c['text']}\n"
+                f"{meta['doc_id']}||{meta['doc_name']}||{meta['section']}||"
+                f"{meta['chunk_id']}||{meta['start']}||{meta['end']}||"
+                f"{meta['source']}||{escaped_text}\n"
             )
 
     print(f"✅ Created {len(chunks)} chunks")
-    print(f"📊 Example chunk:\n{chunks[0]['text'][:300]}...")
+    print(f"📊 Example chunk:\n{chunks[0].text[:300]}...")
