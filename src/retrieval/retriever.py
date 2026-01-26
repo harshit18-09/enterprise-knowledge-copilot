@@ -13,23 +13,24 @@ class Retriever:
         )
         self.collection = self.client.get_collection("enterprise_docs")
 
-    def retrieve(self, query: str):
+    def retrieve(self, query: str, filters: dict = None):
         query_embedding = self.embedder.embed([query])[0]
 
         results = self.collection.query(
             query_embeddings=[query_embedding],
             n_results=self.top_k,
+            where=filters, 
             include=["documents", "metadatas"]
         )
 
-        docs = []
+        chunks = []
         for doc, meta in zip(
             results["documents"][0],
             results["metadatas"][0]
         ):
-            docs.append({
+            chunks.append({
                 "text": doc,
                 "metadata": meta
             })
 
-        return docs
+        return chunks
