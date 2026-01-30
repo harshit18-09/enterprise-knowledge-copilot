@@ -50,10 +50,11 @@ def chunk_text(text, doc_id: str, doc_name: str, source: str, section_title: str
                 "doc_id": doc_id,
                 "doc_name": doc_name,
                 "section": section_title,
-                "chunk_id": len(chunks),  # This gives us 0, 1, 2, ...
+                "chunk_id": len(chunks),  
                 "source": source,
-                "start": start,          # Keep existing fields
-                "end": min(end, text_length)
+                "start": start,         
+                "end": min(end, text_length),
+                "access_level": "internal"
             }
 
             chunks.append(Chunk(
@@ -87,7 +88,7 @@ if __name__ == "__main__":
             f.write(
                 f"{meta['doc_id']}||{meta['doc_name']}||{meta['section']}||"
                 f"{meta['chunk_id']}||{meta['start']}||{meta['end']}||"
-                f"{meta['source']}||{escaped_text}\n"
+                f"{meta['source']}||{meta['access_level']}||{escaped_text}\n"
             )
 
     print(f"✅ Created {len(chunks)} chunks")

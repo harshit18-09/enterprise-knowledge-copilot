@@ -2,7 +2,8 @@
 venv/
 __pycache__/
 *.pyc
-
+requirements.txt
+requirements.lock.txt
 data/chroma/
 data/*.pdf
 data/*.txt
