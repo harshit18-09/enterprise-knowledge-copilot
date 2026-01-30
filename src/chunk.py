@@ -73,7 +73,7 @@ if __name__ == "__main__":
     text = load_text(input_path)
 
     # 🔑 STRUCTURAL FIX (this is the key)
-    text = strip_front_matter(text)
+    # text = strip_front_matter(text)
 
     chunks = chunk_text(text, doc_id="doc1", doc_name="Raw Document", source=input_path)
 

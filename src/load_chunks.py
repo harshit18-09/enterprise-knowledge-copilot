@@ -1,5 +1,5 @@
 from typing import List
-from chunk import Chunk
+from src.chunk import Chunk
 
 def load_chunks(path: str) -> List[Chunk]:
     chunks = []

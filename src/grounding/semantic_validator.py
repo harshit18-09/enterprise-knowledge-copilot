@@ -6,9 +6,12 @@ class SemanticGroundingValidator:
         self.embedder = Embedder()
         self.threshold = threshold
 
+
+
     def is_grounded(self, answer: str, contexts: list) -> bool:
-        if not answer.strip():
+        if not answer.strip() or not contexts:
             return False
+
 
         answer_emb = self.embedder.embed([answer])[0]
         context_text = " ".join(c["text"] for c in contexts)

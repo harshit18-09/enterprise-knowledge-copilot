@@ -3,7 +3,7 @@ from src.qa_pipeline import QAPipeline
 qa = QAPipeline()
 
 # MANUAL TEST HOOK 
-filters = {"section": "Some Random Section"}
+filters = None
 
 while True:
     q = input("Question: ")

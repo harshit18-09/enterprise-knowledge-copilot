@@ -1,7 +1,7 @@
 import chromadb
 from chromadb.config import Settings
 from typing import List
-from chunk import Chunk
+from src.chunk import Chunk
 
 class VectorStore:
     def __init__(self, path="data/chroma"):
