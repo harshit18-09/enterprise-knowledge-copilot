@@ -1,5 +1,5 @@
 from pypdf import PdfReader
-from chunk import Chunk
+from src.chunk import Chunk
 from typing import List
 import re
 
@@ -19,7 +19,7 @@ def extract_pdf(pdf_path: str) -> List[Chunk]:
     doc_name = path_obj.stem
     source = path_obj.name  
     
-    from chunk import chunk_text
+    from src.chunk import chunk_text
     chunks = chunk_text(
         text=cleaned_text,
         doc_id=doc_id,

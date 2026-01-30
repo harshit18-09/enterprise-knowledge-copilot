@@ -10,12 +10,12 @@ def load_chunks(path: str) -> List[Chunk]:
             if not line:
                 continue
 
-            parts = line.split("||", 7)  
-            if len(parts) != 8:
+            parts = line.split("||", 8)  
+            if len(parts) != 9:
                 print(f"⚠️ Skipping malformed line: {line[:50]}...")
                 continue
 
-            doc_id, doc_name, section, chunk_id, start, end, source, text = parts
+            doc_id, doc_name, section, chunk_id, start, end, source, access_level, text = parts
             
             text = text.replace("\\n", "\n")
 
@@ -28,7 +28,8 @@ def load_chunks(path: str) -> List[Chunk]:
                     "chunk_id": int(chunk_id),
                     "source": source,
                     "start": int(start),
-                    "end": int(end)
+                    "end": int(end),
+                    "access_level": access_level
                 }
             ))
 
