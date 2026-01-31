@@ -6,13 +6,15 @@ qa = QAPipeline()
 filters = None
 
 # CHANGE THIS VALUE TO TEST
-USER_ACCESS_LEVEL = "public"   # or "confidential"
+USER_ACCESS_LEVEL = "confidential" #"public"   # or "confidential"
+NAMESPACE = "medicare_sample"
 
 while True:
     q = input("Question: ")
     
     answer, contexts = qa.answer(
         q,
+        namespace=NAMESPACE,
         filters=filters,
         user_access_level=USER_ACCESS_LEVEL
     )

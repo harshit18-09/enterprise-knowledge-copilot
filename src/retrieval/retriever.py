@@ -11,7 +11,6 @@ class Retriever:
             path="data/chroma",
             settings=Settings(anonymized_telemetry=False)
         )
-        self.collection = self.client.get_collection("enterprise_docs")
         self.ACCESS_MAP = {
             "public": ["public"],
             "internal": ["public", "internal"],
@@ -19,16 +18,19 @@ class Retriever:
         }
 
 
-    def retrieve(self, query: str, filters: dict = None, user_access_level="internal"):
+    def retrieve(self, query: str, namespace: str, filters: dict = None, user_access_level="internal"):
+        if not namespace:
+            raise ValueError("Namespace is required for retrieval")
+        collection = self.client.get_collection(f"kb_{namespace}")
+
         if user_access_level not in self.ACCESS_MAP:
             raise ValueError(f"Invalid access level: {user_access_level}")
             
         if user_access_level == "public":
             permission_filter = {"access_level": "public"}
         elif user_access_level == "internal":
-            # internal can see BOTH → we must NOT filter
-            permission_filter = None
-        else:  # confidential
+            permission_filter = {"access_level": {"$in": ["public", "internal"]}}
+        else:  
             permission_filter = None
 
 
@@ -43,7 +45,7 @@ class Retriever:
 
         query_embedding = self.embedder.embed([query])[0]
 
-        results = self.collection.query(
+        results = collection.query(
             query_embeddings=[query_embedding],
             n_results=self.top_k,
             where=where_clause,
