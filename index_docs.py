@@ -1,20 +1,30 @@
+from collections import defaultdict
 from src.load_chunks import load_chunks
 from src.embedder import Embedder
 from src.vector_store import VectorStore
 
 chunks = load_chunks("data/chunks.txt")
 
+groups = defaultdict(list)
+for c in chunks:
+    groups[c.metadata["doc_id"]].append(c)
+
 embedder = Embedder()
 store = VectorStore()
 
-texts = [c.text for c in chunks]
-embeddings = embedder.embed(texts)
+total = 0
 
-store.add(
-    ids=[f"{c.metadata['doc_id']}_{c.metadata['chunk_id']}" for c in chunks],
-    embeddings=embeddings,
-    documents=texts,
-    metadatas=[c.metadata for c in chunks]
-)
+for namespace, doc_chunks in groups.items():
+    texts = [c.text for c in doc_chunks]
+    embeddings = embedder.embed(texts)
 
-print(f"Indexed {len(chunks)} chunks")
+    store.add_chunks(
+        namespace=namespace,
+        chunks=doc_chunks,
+        embeddings=embeddings
+    )
+
+    total += len(doc_chunks)
+    print(f"Indexed {len(doc_chunks)} chunks into namespace '{namespace}'")
+
+print(f"\nTotal indexed chunks: {total}")

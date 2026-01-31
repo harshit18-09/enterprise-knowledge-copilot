@@ -10,12 +10,17 @@ class VectorStore:
             path=path,
             settings=Settings(anonymized_telemetry=False)
         )
-        self.collection = self.client.get_or_create_collection(
-            name="enterprise_docs"
+        
+    def get_collection(self, namespace: str):
+        if not namespace:
+            raise ValueError("Namespace must be provided for vector store access")
+
+        return self.client.get_or_create_collection(
+            name=f"kb_{namespace}"
         )
 
-    def add_chunks(self, chunks: List[Chunk], embeddings: List[List[float]] = None):
-        """Add chunks with optional embeddings"""
+
+    def add_chunks(self, namespace: str, chunks: List[Chunk], embeddings: List[List[float]] = None):
         if not chunks:
             return
         
@@ -30,24 +35,16 @@ class VectorStore:
             metadatas.append(chunk.metadata)
         
         if embeddings:
-            self.collection.add(
+            self.get_collection(namespace).add(
                 ids=ids,
                 embeddings=embeddings,
                 documents=documents,
                 metadatas=metadatas
             )
         else:
-            self.collection.add(
+            self.get_collection(namespace).add(
                 ids=ids,
                 documents=documents,
                 metadatas=metadatas
             )
     
-    # Keep the generic add method for backward compatibility
-    def add(self, ids, embeddings, documents, metadatas):
-        self.collection.add(
-            ids=ids,
-            embeddings=embeddings,
-            documents=documents,
-            metadatas=metadatas
-        )
